@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-matriz-mudanca-base',
@@ -13,8 +13,12 @@ import { Component, OnInit, ViewContainerRef } from '@angular/core';
 export class MatrizMudancaBaseComponent implements OnInit {
 
   public indexAba: number;
+
   public matriz_B = new Array();
+  public resultanteMatriz_B = new Array();
+  
   public matriz_C = new Array();
+  public resultanteMatriz_C = new Array();
 
   constructor() { }
 
@@ -25,6 +29,34 @@ export class MatrizMudancaBaseComponent implements OnInit {
   public calcular() {
     console.log(this.matriz_B);
     console.log(this.matriz_C);
+
+    this.combinacaoLinear(this.matriz_B, this.resultanteMatriz_B);
+    console.log(this.resultanteMatriz_B);
+  }
+
+  /**
+   * @description Método responsável pela Combinação Linear da Matriz
+   * @param matriz : any
+   * @param resultante : any
+   */
+  private combinacaoLinear(matriz: any, resultante: any): void {
+    let tamanho = matriz.length;
+
+    for (let j = 0; j < tamanho; j++) {
+      for (let i = 0; i < tamanho; i++) {
+        if (i !== j) {
+          let auxiliar = matriz[i][j] / matriz[j][j];
+
+          for (let k = 0; k <= tamanho; k++) {
+            matriz[i][k] = matriz [i][k] - auxiliar * matriz[j][k];
+          } 
+        }
+      }
+    }
+
+    for (let i = 0; i < tamanho; i++) {
+      resultante[i] = matriz[i][tamanho + 1] / matriz[i][i];
+    }
   }
 
   /**
