@@ -2,6 +2,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import {TabViewModule} from 'primeng/tabview';
+import {InputTextModule} from 'primeng/inputtext';
+
 import { MatrizMudancaBaseComponent } from './matriz-mudanca-base.component';
 
 @NgModule({
@@ -9,7 +12,9 @@ import { MatrizMudancaBaseComponent } from './matriz-mudanca-base.component';
     MatrizMudancaBaseComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    TabViewModule,
+    InputTextModule
   ]
 })
 export class MatrizMudancaBaseModule { }
