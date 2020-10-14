@@ -12,13 +12,13 @@ import { Component, OnInit } from '@angular/core';
  */
 export class MatrizMudancaBaseComponent implements OnInit {
 
-  public indexAba: number;
+  public indexAba: number = 0;
 
-  public matriz_B = new Array();
-  public resultanteMatriz_B = new Array();
-  
-  public matriz_C = new Array();
-  public resultanteMatriz_C = new Array();
+  public matriz_X = new Array<number>();
+  public resultanteMatriz_X = new Array<number>();
+
+  public matriz_Y = new Array<number>();
+  public resultanteMatriz_Y = new Array<number>();
 
   constructor() { }
 
@@ -27,36 +27,43 @@ export class MatrizMudancaBaseComponent implements OnInit {
   }
 
   public calcular() {
-    console.log(this.matriz_B);
-    console.log(this.matriz_C);
+    console.log('Matriz B: ', this.matriz_X);
+    console.log('Matriz C: ', this.matriz_Y);
 
-    this.combinacaoLinear(this.matriz_B, this.resultanteMatriz_B);
-    console.log(this.resultanteMatriz_B);
+    if (this.indexAba === 0) {
+      this.resultanteMatriz_X[0] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[0]);
+      this.resultanteMatriz_X[1] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[1]);
+
+      console.log('Resultante: ', this.resultanteMatriz_X);
+    }
+    else {
+      //TODO
+    }
   }
 
   /**
-   * @description Método responsável pela Combinação Linear da Matriz
+   * @description Método responsável pela Combinação Linear da Matriz 2x2
    * @param matriz : any
-   * @param resultante : any
+   * @param vetorIgualdade : any
+   * @returns Array - any
    */
-  private combinacaoLinear(matriz: any, resultante: any): void {
-    let tamanho = matriz.length;
+  private combinacaoLinear2x2(matriz: any, vetorIgualdade: any): any {
+    let vetor_A = new Array(matriz[0][0], matriz[1][0], vetorIgualdade[0]);
+    let vetor_B = new Array(matriz[0][1], matriz[1][1], vetorIgualdade[1]);
 
-    for (let j = 0; j < tamanho; j++) {
-      for (let i = 0; i < tamanho; i++) {
-        if (i !== j) {
-          let auxiliar = matriz[i][j] / matriz[j][j];
+    let zerarIncognitaEquacao = - 1 * (vetor_B[0] / vetor_A[0]); 
 
-          for (let k = 0; k <= tamanho; k++) {
-            matriz[i][k] = matriz [i][k] - auxiliar * matriz[j][k];
-          } 
-        }
-      }
-    }
+    console.log(vetor_A);
+    console.log(vetor_B);
+    console.log(zerarIncognitaEquacao);
 
-    for (let i = 0; i < tamanho; i++) {
-      resultante[i] = matriz[i][tamanho + 1] / matriz[i][i];
-    }
+    let variavel_B = ((vetor_A[2] * zerarIncognitaEquacao) + vetor_B[2]) / ((vetor_A[1] * zerarIncognitaEquacao) + vetor_B[1]);
+    let variavel_A = (vetor_A[2] - (vetor_A[1] * variavel_B)) / vetor_A[0];
+
+    console.log('Variavel A: ', variavel_A);
+    console.log('Variavel B: ', variavel_B);
+    
+    return new Array(variavel_A, variavel_B);
   }
 
   /**
@@ -78,12 +85,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
    * @description Método responsável por resetar as Matrizes
    * @param tamanho : number - Tamanho da Matriz Quadrada
    */
-  private resetarMatrizes(tamanho: number): void {
-    this.matriz_B = new Array();
-    this.matriz_C = new Array();
+  public resetarMatrizes(tamanho: number): void {
+    this.matriz_X = new Array();
+    this.matriz_Y = new Array();
 
-    this.resetarMatriz(this.matriz_B, tamanho);
-    this.resetarMatriz(this.matriz_C, tamanho);
+    this.resetarMatriz(this.matriz_X, tamanho);
+    this.resetarMatriz(this.matriz_Y, tamanho);
   }
 
   /**
