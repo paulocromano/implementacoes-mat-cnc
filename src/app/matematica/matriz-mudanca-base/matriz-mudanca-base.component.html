@@ -45,7 +45,41 @@
             </div>
 
             <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
-            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes(2)" style="font-size: 20px;">Resetar Valores</button>
+            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes(2)" style="font-size: 20px;">Resetar Vetores</button>
+
+            <!-- Resultados -->
+            <div class="row mt-5" *ngIf="calculoEfetuado">
+
+                 <!-- Mudança de base X para Y -->
+                <div class="col-xl-4">
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">xy =</span> 
+                    </span>
+
+                    <span class="h4">
+                        [ {{ resultanteMatriz_X[0][0] }} , {{ resultanteMatriz_X[1][0] }} ]
+                    </span>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][1] }} , {{ resultanteMatriz_X[1][1] }} ]</div>
+                </div>
+
+                <div class="barra-vertical"></div>
+
+                <!-- Mudança de base Y para X -->
+                <div class="col-xl-4">
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">yx =</span> 
+                    </span>
+
+                    <span class="h4">
+                        [ {{ resultanteMatriz_Y[0][0] }} , {{ resultanteMatriz_Y[1][0] }} ]
+                    </span>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][1] }} , {{ resultanteMatriz_Y[1][1] }} ]</div>
+                </div>
+
+                <div class="barra-vertical"></div>
+            </div>
         </div>        
     </p-tabPanel>
 
@@ -121,7 +155,7 @@
             </div>
 
             <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
-            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes(3)" style="font-size: 20px;">Resetar Valores</button>
+            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes(3)" style="font-size: 20px;">Resetar Vetores</button>
         </div>
     </p-tabPanel>
 </p-tabView>

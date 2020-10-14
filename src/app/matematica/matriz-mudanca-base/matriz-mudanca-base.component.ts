@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core';
 export class MatrizMudancaBaseComponent implements OnInit {
 
   public indexAba: number = 0;
+  public calculoEfetuado: boolean = false;
 
   public matriz_X = new Array<number>();
   public resultanteMatriz_X = new Array<number>();
@@ -27,12 +28,16 @@ export class MatrizMudancaBaseComponent implements OnInit {
   }
 
   public calcular() {
+    this.calculoEfetuado = true;
     console.log('Matriz B: ', this.matriz_X);
     console.log('Matriz C: ', this.matriz_Y);
 
     if (this.indexAba === 0) {
       this.resultanteMatriz_X[0] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[0]);
       this.resultanteMatriz_X[1] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[1]);
+
+      this.resultanteMatriz_Y[0] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[0]);
+      this.resultanteMatriz_Y[1] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[1]);
 
       console.log('Resultante: ', this.resultanteMatriz_X);
     }
@@ -63,7 +68,7 @@ export class MatrizMudancaBaseComponent implements OnInit {
     console.log('Variavel A: ', variavel_A);
     console.log('Variavel B: ', variavel_B);
     
-    return new Array(variavel_A, variavel_B);
+    return new Array(variavel_A.toFixed(2), variavel_B.toFixed(2));
   }
 
   /**
@@ -91,6 +96,8 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
     this.resetarMatriz(this.matriz_X, tamanho);
     this.resetarMatriz(this.matriz_Y, tamanho);
+
+    this.calculoEfetuado = false;
   }
 
   /**
