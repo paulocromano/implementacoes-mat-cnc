@@ -1,1 +1,27 @@
-<p>integracao-numerica works!</p>
+<h1 class="text-center display-4 my-3">Integração Numérica</h1>
+
+<a class="btn btn-secondary py-2 px-4 ml-3 mb-2" href="/">Voltar</a>
+
+<hr>
+
+<div class="text-center">
+
+    <div class="mt-4">
+        <label class="h5 mr-3">Limite Superior:</label>
+        <input class="input-style mr-3" type="number" pInputText [(ngModel)]="limiteSuperior"> 
+    
+        <label class="h5 mx-3">Limite Inferior:</label>
+        <input class="input-style" type="number" pInputText [(ngModel)]="limiteInferior"> 
+    </div>
+
+    <div class="mt-5">
+        <label class="h5 mr-3">Função:</label>
+        <input class="input-funcao-style mr-3" type="text" pInputText [(ngModel)]="funcao"> 
+
+        <label class="h5 mr-2">dx =</label>
+        <input class="input-style mr-3" type="number" pInputText [(ngModel)]="h" [disabled]="true" placeholder="h/2"> 
+    </div>
+
+    <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
+    <button class="btn btn-warning mt-4 ml-3" (click)="resetarValores()" style="font-size: 20px;">Resetar Valores</button>
+</div>
