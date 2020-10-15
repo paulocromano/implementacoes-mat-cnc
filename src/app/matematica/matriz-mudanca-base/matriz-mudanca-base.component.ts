@@ -21,6 +21,8 @@ export class MatrizMudancaBaseComponent implements OnInit {
   public matriz_Y = new Array<number>();
   public resultanteMatriz_Y = new Array<number>();
 
+  public verificacao;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -29,8 +31,6 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
   public calcular() {
     this.calculoEfetuado = true;
-    console.log('Matriz B: ', this.matriz_X);
-    console.log('Matriz C: ', this.matriz_Y);
 
     if (this.indexAba === 0) {
       this.resultanteMatriz_X[0] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[0]);
@@ -39,7 +39,10 @@ export class MatrizMudancaBaseComponent implements OnInit {
       this.resultanteMatriz_Y[0] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[0]);
       this.resultanteMatriz_Y[1] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[1]);
 
-      console.log('Resultante: ', this.resultanteMatriz_X);
+      this.verificacaoMudancaBase2x2();
+
+      console.log('Resultante X: ', this.resultanteMatriz_X);
+      console.log('Resultante Y: ', this.resultanteMatriz_Y);
     }
     else {
       //TODO
@@ -58,17 +61,44 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
     let zerarIncognitaEquacao = - 1 * (vetor_B[0] / vetor_A[0]); 
 
-    console.log(vetor_A);
-    console.log(vetor_B);
-    console.log(zerarIncognitaEquacao);
-
     let variavel_B = ((vetor_A[2] * zerarIncognitaEquacao) + vetor_B[2]) / ((vetor_A[1] * zerarIncognitaEquacao) + vetor_B[1]);
     let variavel_A = (vetor_A[2] - (vetor_A[1] * variavel_B)) / vetor_A[0];
-
-    console.log('Variavel A: ', variavel_A);
-    console.log('Variavel B: ', variavel_B);
     
-    return new Array(variavel_A.toFixed(2), variavel_B.toFixed(2));
+    return new Array(this.converterParaFloat(variavel_A), this.converterParaFloat(variavel_B));
+  }
+
+  /**
+   * @description Método responsável por fazer a verficação da Mudança de Base 2x2
+   */
+  private verificacaoMudancaBase2x2(): void {
+
+    let posicao00 = this.converterParaFloat(this.resultanteMatriz_X[0][0] * this.resultanteMatriz_Y[0][0]) 
+      + this.converterParaFloat(this.resultanteMatriz_X[1][0] * this.resultanteMatriz_Y[0][1]);
+
+    let posicao01 = this.converterParaFloat(this.resultanteMatriz_X[0][0] * this.resultanteMatriz_Y[1][0]) 
+      + this.converterParaFloat(this.resultanteMatriz_X[1][0] * this.resultanteMatriz_Y[1][1]);
+
+    let posicao10 = this.converterParaFloat(this.resultanteMatriz_X[0][1] * this.resultanteMatriz_Y[0][0])
+      + this.converterParaFloat(this.resultanteMatriz_X[1][1] * this.resultanteMatriz_Y[0][1]);
+
+    let posicao11 = this.converterParaFloat(this.resultanteMatriz_X[0][1] * this.resultanteMatriz_Y[1][0])
+      + this.converterParaFloat(this.resultanteMatriz_X[1][1] * this.resultanteMatriz_Y[1][1]);
+    
+    this.verificacao = [
+      new Array(posicao00, posicao01),
+      new Array(posicao10, posicao11)
+    ];
+
+    console.log('Verificação: ', this.verificacao);
+  }
+
+  /**
+   * @description Método responsável por fixar duas casas decimais e converter de volta pra number
+   * @param valor : number
+   * @returns number - Valor convertido
+   */
+  private converterParaFloat(valor: number): number {
+    return parseFloat(valor.toFixed(2));
   }
 
   /**

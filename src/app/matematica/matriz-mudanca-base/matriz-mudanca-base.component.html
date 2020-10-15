@@ -51,7 +51,9 @@
             <div class="row mt-5" *ngIf="calculoEfetuado">
 
                  <!-- Mudança de base X para Y -->
-                <div class="col-xl-4">
+                <div class="col-xl-3">
+                    <div class="h4 text-danger">Base X para Y:</div>
+
                     <span class="h2">
                         [U]
                         <span class="h4" style="margin-left: -10px;">xy =</span> 
@@ -66,7 +68,9 @@
                 <div class="barra-vertical"></div>
 
                 <!-- Mudança de base Y para X -->
-                <div class="col-xl-4">
+                <div class="col-xl-3">
+                    <div class="h4 text-danger">Base Y para X:</div>
+
                     <span class="h2">
                         [U]
                         <span class="h4" style="margin-left: -10px;">yx =</span> 
@@ -79,6 +83,23 @@
                 </div>
 
                 <div class="barra-vertical"></div>
+
+                <!-- Verificação -->
+                <div class="col-xl-5">
+                    <div class="h4 text-danger">Verificação:</div>
+
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">xy .</span>
+                        [U]
+                        <span class="h4" style="margin-left: -10px;"> yx =</span>
+                    </span>
+
+                    <span class="h4">
+                        [ {{ verificacao[0][0] }} , {{ verificacao[0][1] }} ]
+                    </span>
+                    <div class="h4" style="margin-left: 185px;">[ {{ verificacao[1][0] }} , {{ verificacao[1][1] }} ]</div>
+                </div>
             </div>
         </div>        
     </p-tabPanel>
