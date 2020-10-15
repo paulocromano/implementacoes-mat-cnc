@@ -1,11 +1,13 @@
-<h1 class="text-center display-4 my-4">Matriz Mudança de Base</h1>
+<h1 class="text-center display-4 my-3">Matriz Mudança de Base</h1>
+
+<a class="btn btn-secondary py-2 px-4 ml-3 mb-2" href="/">Voltar</a>
 
 <!-- BASE 2x2 -->
 <p-tabView (onChange)="checarAba($event)" [activeIndex]="indexAba">
     <p-tabPanel header="Base 2x2">
         <div class="text-center">
             <div>
-                <div class="h2">Base X</div>
+                <div class="h2 text-primary">Base X</div>
                 
                 <div>
                     <span class="h1 mr-2">(</span>
@@ -25,7 +27,7 @@
             </div>
 
             <div class="mt-4">
-                <div class="h2">Base Y</div>
+                <div class="h2 text-primary">Base Y</div>
 
                 <div>
                     <span class="h1 mr-2">(</span>
@@ -50,7 +52,7 @@
             <!-- Resultados -->
             <div class="row mt-5" *ngIf="calculoEfetuado">
 
-                 <!-- Mudança de base X para Y -->
+                <!-- Mudança de base X para Y -->
                 <div class="col-xl-3">
                     <div class="h4 text-danger">Base X para Y:</div>
 
@@ -108,7 +110,7 @@
     <p-tabPanel header="Base 3x3">
         <div class="text-center" *ngIf="indexAba === 1">
             <div>
-                <div class="h2">Base X</div>
+                <div class="h2 text-primary">Base X</div>
                 
                 <div>
                     <span class="h1 mr-2">(</span>
@@ -142,7 +144,7 @@
             </div>
 
             <div class="mt-4">
-                <div class="h2">Base Y</div>
+                <div class="h2 text-primary">Base Y</div>
 
                 <div>
                     <span class="h1 mr-2">(</span>

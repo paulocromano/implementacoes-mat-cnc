@@ -1,5 +1,4 @@
-
-
+import { PaginaInicialModule } from './pagina-inicial/pagina-inicial.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -17,7 +16,8 @@ import { IntegracaoNumericaModule } from './calculo-numerico-computacional/integ
     BrowserModule,
     AppRoutingModule,
     MatrizMudancaBaseModule,
-    IntegracaoNumericaModule
+    IntegracaoNumericaModule,
+    PaginaInicialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
