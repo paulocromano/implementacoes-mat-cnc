@@ -22,7 +22,7 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.limiteSuperior);
     let x = this.calcularValoresDeX();
 
-    this.verificarSeExisteDivisao();
+    //this.verificarSeExisteDivisao();
 
   }
 
@@ -33,7 +33,13 @@ export class IntegracaoNumericaComponent implements OnInit {
   private calcularValoresDeX(): number[] {
     let x = new Array<number>();
 
-    x.push(this.h + this.limiteInferior);
+    x.push(this.limiteInferior, this.h + this.limiteInferior);
+
+    let i = 2;
+    for (; x[i - 1] !== this.limiteSuperior; i++) {
+      x.push(this.converterParaFloat(x[i - 1] + this.h));
+    }
+
     console.log(x);
 
     return x;
