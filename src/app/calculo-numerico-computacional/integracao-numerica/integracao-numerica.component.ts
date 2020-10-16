@@ -14,6 +14,8 @@ export class IntegracaoNumericaComponent implements OnInit {
   public funcao: string;
   public h: number;
 
+  public resultado: number = 0;
+
   constructor() { }
 
   ngOnInit(): void { }
@@ -22,7 +24,7 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.limiteSuperior);
     let x = this.calcularValoresDeX();
 
-    //this.verificarSeExisteDivisao();
+    this.existeDivisao();
 
   }
 
@@ -45,12 +47,90 @@ export class IntegracaoNumericaComponent implements OnInit {
     return x;
   }
 
+  private existeDivisao() {
+    if (this.verificarSeExisteOperador('/').length > 1) {
+      console.log('Com divisao');
+      this.efetuarCalculoComOperadorEncontrado('+');
+    }
+    else {
+      console.log('Sem divisao');
+      this.efetuarCalculoComOperadorEncontrado('+');/*
+      this.efetuarCalculoComOperadorEncontrado('-');
+      this.efetuarCalculoComOperadorEncontrado('*');
+      this.efetuarCalculoComOperadorEncontrado('^');*/
+    }
+  }
+
+//FAZER VÁRIOS INPUTS SEPARADOS PELO OPERADOR
+  private efetuarCalculoComOperadorEncontrado(operador: string) {
+    let valores = this.verificarSeExisteOperador(operador);
+    let tamanho = valores.length;
+
+    if (valores.length > 1) {
+
+      // Valores antes do sinal quando há uma variável sem constante
+      if (valores[tamanho - 2] === 'x') {
+        this.efetuarCalculo(this.h.toString(), operador, valores[tamanho - 1]);
+      }
+      // Valores antes do sinal quando há uma variável com constante
+      else if (valores[tamanho - 2].length > 1) {
+        let constante = parseFloat(valores[tamanho - 2].split('x')[0]);
+        this.efetuarCalculo((constante * this.h).toString(), operador, valores[tamanho - 1]);
+      }
+
+      // Valores depois do sinal quando há uma variável sem constante
+      else if (valores[tamanho - 1] === 'x') {
+        this.efetuarCalculo(valores[tamanho - 2], operador, this.h.toString());
+      }
+      else if (valores[tamanho - 1].split('^').length > 1) {
+        let v = valores[tamanho - 1].split('^');
+        let valorExpoente: number;
+        console.log('v: ', v);
+
+        if (v[tamanho - 2] === 'x') {
+          valorExpoente = Math.pow(this.h, parseFloat(v[1]));
+          this.efetuarCalculo(valores[tamanho - 2], operador, valorExpoente.toString());
+        }
+        else {
+
+        }
+      }
+      // Valores depois do sinal quando há uma variável com constante
+      else if (valores[tamanho - 1].length > 1) {
+        let constante = parseFloat(valores[tamanho - 1].split('x')[0]);
+        this.efetuarCalculo(valores[tamanho - 2], operador, (constante * this.h).toString());
+      }
+
+      // Quando não há variável no cálculo
+      else {
+        this.efetuarCalculo(valores[tamanho - 2], operador, valores[tamanho - 1]);
+      }
+    }
+
+    console.log('Valores: ', valores);
+    console.log('Tamanho: ', tamanho);
+    console.log('Resultado: ', this.resultado);
+  }
+
+  private efetuarCalculo(valor: string, operador: string, valor2: string) {
+    let value = parseFloat(valor);
+    let value2 = parseFloat(valor2);
+
+    switch(operador) {
+      case '+': this.resultado = value + value2; break;
+      case '-': this.resultado = value - value2; break;
+      case '*': this.resultado = value * value2; break;
+      case '^': this.resultado = Math.pow(value, value2); break;
+    }
+  }
+
   /**
-   * @description Método responsável por verificar se existe divisão
+   * @description Método responsável por verificar se existe operador
+   * @param regex : string
    * @returns string[]
    */
-  private verificarSeExisteDivisao(): string[] {
-    return this.funcao.split("/");
+  private verificarSeExisteOperador(regex: string): string[] {
+    return this.funcao.split(regex);
   }
 
   /**
