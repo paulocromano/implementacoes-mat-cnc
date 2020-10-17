@@ -47,22 +47,42 @@ export class IntegracaoNumericaComponent implements OnInit {
     return x;
   }
 
+  /**
+   * @description Método responsável por verificar se existe divisão na função e efetuar os cálculos
+   */
   private existeDivisao() {
+    let operador = this.retornarOperadorFuncao();
+    console.log('sinal: ', operador)
+
     if (this.verificarSeExisteOperador('/').length > 1) {
       console.log('Com divisao');
-      this.efetuarCalculoComOperadorEncontrado('+');
+      this.efetuarCalculoComOperadorEncontrado(operador);
     }
     else {
       console.log('Sem divisao');
-      this.efetuarCalculoComOperadorEncontrado('+');/*
-      this.efetuarCalculoComOperadorEncontrado('-');
-      this.efetuarCalculoComOperadorEncontrado('*');
-      this.efetuarCalculoComOperadorEncontrado('^');*/
+      this.efetuarCalculoComOperadorEncontrado(operador);
     }
   }
 
-  //FAZER VÁRIOS INPUTS SEPARADOS PELO OPERADOR
-  private efetuarCalculoComOperadorEncontrado(operador: string) {
+  /**
+   * @description Método responsável por retornar o operador utilizado na função
+   * @returns string - Operador
+   */
+  private retornarOperadorFuncao(): string {
+    for (let index = 0; index < this.funcao.length; index++) {
+      let caracterAtual = this.funcao.charAt(index);
+
+      if (caracterAtual === '+' || caracterAtual === '-' || caracterAtual === '*') {
+        return caracterAtual;
+      }
+    }
+  } 
+
+  /**
+   * @description Método responsável efetuar o cálculo com base no operador
+   * @param operador : string
+   */
+  private efetuarCalculoComOperadorEncontrado(operador: string): void {
     let valores = this.verificarSeExisteOperador(operador);
     let tamanho = valores.length;
     let vetorExpoente: string[];
@@ -78,7 +98,7 @@ export class IntegracaoNumericaComponent implements OnInit {
       else if (valores[tamanho - 2].split('^').length > 1) { // Quando houver expoente na função
         this.calcularExpoenteAntesDoSinal(vetorExpoente, valorExpoente, valores, tamanho, operador);
       }
-      
+
       else if (valores[tamanho - 2].length > 1) { // Valores antes do sinal quando há uma variável com constante
         let constante = parseFloat(valores[tamanho - 2].split('x')[0]);
         this.efetuarCalculo((constante * this.h).toString(), operador, valores[tamanho - 1]);
@@ -108,6 +128,14 @@ export class IntegracaoNumericaComponent implements OnInit {
     console.log('Resultado: ', this.resultado);
   }
 
+  /**
+   * Método responsável por efetuar o cálculo de valores com expoente antes do sinal
+   * @param vetorExpoente : string[]
+   * @param valorExpoente : number
+   * @param valores : string[]
+   * @param tamanho : number
+   * @param operador : string
+   */
   private calcularExpoenteAntesDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
     vetorExpoente = valores[tamanho - 2].split('^');
     console.log('vetorExpoente: ', vetorExpoente);
@@ -127,6 +155,14 @@ export class IntegracaoNumericaComponent implements OnInit {
     }
   }
 
+  /**
+   * Método responsável por efetuar o cálculo de valores com expoente após do sinal
+   * @param vetorExpoente : string[]
+   * @param valorExpoente : number
+   * @param valores : string[]
+   * @param tamanho : number
+   * @param operador : string
+   */
   private calcularExpoenteDepoisDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
     vetorExpoente = valores[tamanho - 1].split('^');
     console.log('vetorExpoente: ', vetorExpoente);
@@ -145,7 +181,13 @@ export class IntegracaoNumericaComponent implements OnInit {
     }
   }
 
-  private efetuarCalculo(valor: string, operador: string, valor2: string) {
+  /**
+   * @description Método responsável por efetuar um cálculo com base no operador passado
+   * @param valor : string
+   * @param operador : string
+   * @param valor2 : string
+   */
+  private efetuarCalculo(valor: string, operador: string, valor2: string): void {
     let value = parseFloat(valor);
     let value2 = parseFloat(valor2);
 
