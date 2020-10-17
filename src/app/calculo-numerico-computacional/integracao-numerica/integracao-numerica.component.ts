@@ -75,17 +75,39 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @description Método responsável por verificar se existe divisão na função e efetuar os cálculos
    */
   private existeDivisao() {
-    let operador = this.retornarOperadorFuncao();
-    console.log('sinal: ', operador)
-
     if (this.verificarSeExisteOperador('/').length > 1) {
       console.log('Com divisao');
-      this.efetuarCalculoComOperadorEncontrado(operador);
+      let funcaoAuxiliar = this.funcao;
+
+      let numerador = this.calcularValoresParaDivisao(0, funcaoAuxiliar);
+      let denominador = this.calcularValoresParaDivisao(1, funcaoAuxiliar);
+
+      this.resultado = this.converterParaFloat(numerador / denominador);
+      console.log('resultado divisao: ', this.resultado);
     }
     else {
+      let operador: string;
       console.log('Sem divisao');
+      operador = this.retornarOperadorFuncao();
+      console.log('sinal: ', operador);
       this.efetuarCalculoComOperadorEncontrado(operador);
     }
+  }
+
+  /**
+   * @description Método responsável por calcular o resultado parcial da divisão da função
+   * @param posicao number
+   * @param funcaoAuxiliar string
+   * @returns number - Valor parcial da Divisão 
+   */
+  private calcularValoresParaDivisao(posicao: number, funcaoAuxiliar: string): number {
+    let operador: string;
+
+    this.funcao = funcaoAuxiliar.split('/')[posicao];
+    operador = this.retornarOperadorFuncao();
+    this.efetuarCalculoComOperadorEncontrado(operador);
+
+    return this.resultado;
   }
 
   /**
