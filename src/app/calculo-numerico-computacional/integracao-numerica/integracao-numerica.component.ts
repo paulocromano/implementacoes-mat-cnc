@@ -6,6 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./integracao-numerica.component.css']
 })
 
+/**
+ * @author Paulo Romano
+ * @description Componente responsável por efetuar o Cálculo de Integração
+ */
 export class IntegracaoNumericaComponent implements OnInit {
 
   public limiteSuperior: number = 0;
@@ -142,8 +146,32 @@ export class IntegracaoNumericaComponent implements OnInit {
         this.efetuarCalculo(valores[tamanho - 2], operador, valores[tamanho - 1]);
       }
     }
-    else {
-      
+
+    // QUANDO HOUVER APENAS UM VALOR A SER CALCULADO
+    else if (valores.length === 1) { 
+      vetorExpoente = valores[0].split('^');
+
+      if (vetorExpoente.length > 1) {
+        if (vetorExpoente[0] === 'x') { // Quando não houver constante com variável com expoente
+          this.resultado = this.h * parseFloat(vetorExpoente[1]);
+          console.log('Numerador: ', this.resultado);
+        }
+        else { // Quando houver constante, variável e expoente
+          valorExpoente = parseFloat(vetorExpoente[1]);
+          let constante = parseFloat(vetorExpoente[0].split('x')[0]);
+
+          this.resultado = constante * Math.pow(this.h, valorExpoente);
+          console.log('valor com expoente: ', this.resultado);
+        }
+      }
+      else if (vetorExpoente.length === 1 && vetorExpoente[0] === 'x') { // Quando não houver constante 
+        this.resultado = this.h;
+        console.log('x: ', this.resultado);
+      }
+      else { // Quando houver apenas a constante
+        this.resultado = parseFloat(vetorExpoente[0]);
+        console.log('const: ', this.resultado);
+      }
     }
 
     console.log('Valores: ', valores);
@@ -249,5 +277,8 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.funcao = null;
     this.h = null;
     this.exibirResolucao = false;
+    this.x = new Array<number>();
+    this.formulaResultado = null;
+    this.resultado = 0;
   } 
 }
