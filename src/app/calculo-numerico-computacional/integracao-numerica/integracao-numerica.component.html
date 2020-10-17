@@ -19,7 +19,7 @@
         <input class="input-funcao-style mr-3" type="text" pInputText [(ngModel)]="funcao"> 
 
         <label class="h5 mr-2">h =</label>
-        <input class="input-style mr-3" type="number" pInputText [(ngModel)]="h" [disabled]="true" placeholder="h/2"> 
+        <input class="input-style mr-3" type="number" pInputText [(ngModel)]="h" [disabled]="true"> 
     </div>
 
     <button class="btn btn-success px-5 mt-4" (click)="calcular()" [disabled]="!funcao" style="font-size: 20px;">Calcular</button>
@@ -29,7 +29,7 @@
         <div class="h3 text-danger">Resolução</div>
 
         <div class="h4">
-            {{ formulaResultado }} = 
+            {{ formulaResultado }}
         </div>
     </div>
 </div>
