@@ -13,19 +13,41 @@ export class IntegracaoNumericaComponent implements OnInit {
 
   public funcao: string;
   public h: number;
+  private x = new Array<number>();
 
   public resultado: number = 0;
+  public formulaResultado: string;
+  public exibirResolucao: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void { }
 
+  /**
+   * @description Método responsável por realizar o cálculo da Integração Numérica
+   */
   public calcular(): void {
+    this.exibirResolucao = true;
+
     this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.limiteSuperior);
     let x = this.calcularValoresDeX();
 
     this.existeDivisao();
+    this.gerarFormulaResultado();
+  }
 
+  /**
+   * @description Método responsável por gerar a fórmula utilizada para a Integração Numérica
+   */
+  private gerarFormulaResultado(): void {
+    this.formulaResultado = 'h/2 . [f(x0)';
+    let i = 1;
+
+    for (; i < this.x.length - 1; i++) {
+      this.formulaResultado += ' + 2f(x' + i +')';
+    }
+
+    this.formulaResultado += ' + f(x' + i + ')]';
   }
 
   /**
@@ -33,18 +55,16 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @returns number[] - Contendo os valores de X
    */
   private calcularValoresDeX(): number[] {
-    let x = new Array<number>();
-
-    x.push(this.limiteInferior, this.h + this.limiteInferior);
+    this.x.push(this.limiteInferior, this.h + this.limiteInferior);
 
     let i = 2;
-    for (; x[i - 1] !== this.limiteSuperior; i++) {
-      x.push(this.converterParaFloat(x[i - 1] + this.h));
+    for (; this.x[i - 1] !== this.limiteSuperior; i++) {
+      this.x.push(this.converterParaFloat(this.x[i - 1] + this.h));
     }
 
-    console.log(x);
+    console.log(this.x);
 
-    return x;
+    return this.x;
   }
 
   /**
@@ -121,6 +141,9 @@ export class IntegracaoNumericaComponent implements OnInit {
       else { // Quando não há variável e/ou sinal no numerador
         this.efetuarCalculo(valores[tamanho - 2], operador, valores[tamanho - 1]);
       }
+    }
+    else {
+      
     }
 
     console.log('Valores: ', valores);
@@ -225,5 +248,6 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.limiteInferior = 0;
     this.funcao = null;
     this.h = null;
+    this.exibirResolucao = false;
   } 
 }
