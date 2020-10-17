@@ -61,48 +61,44 @@ export class IntegracaoNumericaComponent implements OnInit {
     }
   }
 
-//FAZER VÁRIOS INPUTS SEPARADOS PELO OPERADOR
+  //FAZER VÁRIOS INPUTS SEPARADOS PELO OPERADOR
   private efetuarCalculoComOperadorEncontrado(operador: string) {
     let valores = this.verificarSeExisteOperador(operador);
     let tamanho = valores.length;
+    let vetorExpoente: string[];
+    let valorExpoente: number;
 
     if (valores.length > 1) {
 
-      // Valores antes do sinal quando há uma variável sem constante
-      if (valores[tamanho - 2] === 'x') {
+      // ANTES DO OPERADOR
+      if (valores[tamanho - 2] === 'x') { // Valores antes do sinal quando há uma variável sem constante
         this.efetuarCalculo(this.h.toString(), operador, valores[tamanho - 1]);
       }
-      // Valores antes do sinal quando há uma variável com constante
-      else if (valores[tamanho - 2].length > 1) {
+
+      else if (valores[tamanho - 2].split('^').length > 1) { // Quando houver expoente na função
+        this.calcularExpoenteAntesDoSinal(vetorExpoente, valorExpoente, valores, tamanho, operador);
+      }
+      
+      else if (valores[tamanho - 2].length > 1) { // Valores antes do sinal quando há uma variável com constante
         let constante = parseFloat(valores[tamanho - 2].split('x')[0]);
         this.efetuarCalculo((constante * this.h).toString(), operador, valores[tamanho - 1]);
-      }
+      }      
 
-      // Valores depois do sinal quando há uma variável sem constante
-      else if (valores[tamanho - 1] === 'x') {
+      // DEPOIS DO OPERADOR
+      else if (valores[tamanho - 1] === 'x') { // Valores depois do sinal quando há uma variável sem constante
         this.efetuarCalculo(valores[tamanho - 2], operador, this.h.toString());
       }
-      else if (valores[tamanho - 1].split('^').length > 1) {
-        let v = valores[tamanho - 1].split('^');
-        let valorExpoente: number;
-        console.log('v: ', v);
 
-        if (v[tamanho - 2] === 'x') {
-          valorExpoente = Math.pow(this.h, parseFloat(v[1]));
-          this.efetuarCalculo(valores[tamanho - 2], operador, valorExpoente.toString());
-        }
-        else {
-
-        }
+      else if (valores[tamanho - 1].split('^').length > 1) { // Quando houver expoente na função
+        this.calcularExpoenteDepoisDoSinal(vetorExpoente, valorExpoente, valores, tamanho, operador);
       }
-      // Valores depois do sinal quando há uma variável com constante
-      else if (valores[tamanho - 1].length > 1) {
+
+      else if (valores[tamanho - 1].length > 1) { // Valores depois do sinal quando há uma variável com constante
         let constante = parseFloat(valores[tamanho - 1].split('x')[0]);
         this.efetuarCalculo(valores[tamanho - 2], operador, (constante * this.h).toString());
       }
 
-      // Quando não há variável no cálculo
-      else {
+      else { // Quando não há variável e/ou sinal no numerador
         this.efetuarCalculo(valores[tamanho - 2], operador, valores[tamanho - 1]);
       }
     }
@@ -110,6 +106,43 @@ export class IntegracaoNumericaComponent implements OnInit {
     console.log('Valores: ', valores);
     console.log('Tamanho: ', tamanho);
     console.log('Resultado: ', this.resultado);
+  }
+
+  private calcularExpoenteAntesDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
+    vetorExpoente = valores[tamanho - 2].split('^');
+    console.log('vetorExpoente: ', vetorExpoente);
+
+    if (vetorExpoente[tamanho - 2] === 'x') { // Se não houver constante explicita
+      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
+      console.log('valorExpoente: ', valorExpoente);
+
+      this.efetuarCalculo(valorExpoente.toString(), operador, valores[tamanho - 1]);
+    }
+    else { // Se houver constante explícita
+      let constanteExpoente = parseFloat(vetorExpoente[tamanho - 2].split('x')[0]);
+      console.log('constanteExpoente: ', constanteExpoente)
+      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
+
+      this.efetuarCalculo((constanteExpoente * valorExpoente).toString(), operador, valores[tamanho - 1]);
+    }
+  }
+
+  private calcularExpoenteDepoisDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
+    vetorExpoente = valores[tamanho - 1].split('^');
+    console.log('vetorExpoente: ', vetorExpoente);
+   
+    if (vetorExpoente[tamanho - 2] === 'x') { // Se não houver constante explicita
+      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
+
+      this.efetuarCalculo(valores[tamanho - 2], operador, valorExpoente.toString());
+    }
+    else { // Se houver constante explícita
+      let constanteExpoente = parseFloat(vetorExpoente[tamanho - 2].split('x')[0]);
+      console.log('constanteExpoente: ', constanteExpoente)
+      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
+
+      this.efetuarCalculo(valores[tamanho - 2], operador, (constanteExpoente * valorExpoente).toString());
+    }
   }
 
   private efetuarCalculo(valor: string, operador: string, valor2: string) {
