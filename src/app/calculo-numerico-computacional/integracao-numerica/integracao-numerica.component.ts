@@ -61,6 +61,7 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @returns number[] - Contendo os valores de X
    */
   private calcularValoresDeX(): number[] {
+    this.x = new Array<number>();
     this.x.push(this.limiteInferior, this.h + this.limiteInferior);
 
     let i = 2;
@@ -99,8 +100,8 @@ export class IntegracaoNumericaComponent implements OnInit {
 
     console.log(resultadoParcialAntesOperador);
     console.log(resultadoParcialDepoisOperador);
-    
-    this.resultado = this.efetuarCalculo(resultadoParcialAntesOperador, operador, resultadoParcialDepoisOperador);
+
+    this.resultado = this.converterParaFloat(this.efetuarCalculo(resultadoParcialAntesOperador, operador, resultadoParcialDepoisOperador));
     console.log('resultado: ', this.resultado);
   }
 
@@ -113,10 +114,10 @@ export class IntegracaoNumericaComponent implements OnInit {
    */
   private resultadoParcial(valores: string[], valorParcial: string, valorAtual_X: number): number {
     let resultadoParcial: number;
+    let funcao: string[];
+    let constante: number;
     
     if (valores.length > 1) {  
-      let funcao: string[];
-      let constante: number;
       let valorAntesExpoente: string;
 
       if (valorParcial === 'x') { //Quando houver apenas a variável
@@ -134,11 +135,55 @@ export class IntegracaoNumericaComponent implements OnInit {
           resultadoParcial = this.calcularExpoente(valorAtual_X, funcao[1], constante);
         }
       }
-      else if (this.verificarSeExisteOperador('sen', valorParcial).length > 1) {
+      else if (this.verificarSeExisteOperador('sen', valorParcial).length > 1) { //Quando houver houver ângulo e for SEN
         resultadoParcial = this.calcularAngulo('sen', valorParcial, valorAtual_X);
+      }
+      else if (this.verificarSeExisteOperador('cos', valorParcial).length > 1) { //Quando houver houver ângulo e for COS
+        resultadoParcial = this.calcularAngulo('cos', valorParcial, valorAtual_X);
+      }
+      else if (valorParcial.split(new RegExp('[0-9]'))[1] === 'x') { //Quando houver uma constante e variável
+        constante = parseFloat(valorParcial.split('x')[0]);
+        resultadoParcial = constante * valorAtual_X;
       }
       else if (valorParcial !== 'x') { //Quando houver apenas uma constante
         resultadoParcial = parseFloat(valorParcial);
+      }
+    }
+
+    //Quando há apenas um valor
+    else if (valores.length === 1) { 
+      funcao = valores[0].split('^');
+      let tamanho = valores.length;
+
+      if (valores[tamanho - 1].split('sen').length > 1) { //Quando houver houver ângulo e for SEN
+        resultadoParcial = this.calcularAngulo('sen', valores[0], valorAtual_X);
+      }
+      else if (valores[tamanho - 1].split('cos').length > 1) { //Quando houver houver ângulo e for COS
+        resultadoParcial = this.calcularAngulo('cos', valores[0], valorAtual_X);
+      }
+
+      else if (funcao.length > 1) {
+        if (funcao[0] === 'x') { //Quando não houver constante com variável com expoente
+          resultadoParcial = valorAtual_X * parseFloat(funcao[1]);
+        }
+        else { //Quando houver constante, variável e expoente
+          let expoente = parseFloat(funcao[1]);
+          constante = parseFloat(funcao[0].split('x')[0]);
+
+          resultadoParcial = constante * Math.pow(valorAtual_X, expoente);
+        }
+      }
+
+      else if (funcao[0].split(new RegExp('[0-9]'))[1] === 'x') { //Quando houver uma constante e variável
+        constante = parseFloat(funcao[0].split('x')[0]);
+        resultadoParcial = constante * valorAtual_X;
+      }
+
+      else if (funcao.length === 1 && funcao[0] === 'x') { // Quando houver apenas a variável
+        resultadoParcial = valorAtual_X;
+      }
+      else { //Quando houver apenas a constante
+        resultadoParcial = parseFloat(funcao[0]);
       }
     }
 
@@ -260,7 +305,6 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.funcao = null;
     this.h = null;
     this.exibirResolucao = false;
-    this.x = new Array<number>();
     this.formulaResultado = null;
     this.resultado = 0;
   } 
