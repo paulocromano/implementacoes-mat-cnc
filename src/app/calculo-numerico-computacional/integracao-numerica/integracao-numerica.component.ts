@@ -14,10 +14,11 @@ export class IntegracaoNumericaComponent implements OnInit {
 
   public limiteSuperior: number = 0;
   public limiteInferior: number = 0;
+  public n: number = 0;
 
   public funcao: string;
   public h: number = 0;
-  private x = new Array<number>();
+  public x = new Array<number>();
 
   public resultado: number = 0;
   public formulaResultado: string;
@@ -34,19 +35,18 @@ export class IntegracaoNumericaComponent implements OnInit {
   public calcular(): void {
     this.exibirResolucao = true;
 
-    this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.limiteSuperior);
-    let x = this.calcularValoresDeX();
+    this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.n);
+    this.calcularValoresDeX();
 
     this.gerarFormulaResultado();
-    this.efetuarCalculoComOperadorEncontrado('+', this.x[0]);
-    this.calcularResultadoFinal(x);
+    this.calcularResultadoFinal();
   }
 
   /**
    * @description Método responsável por gerar a fórmula utilizada para a Integração Numérica
    */
   private gerarFormulaResultado(): void {
-    this.formulaResultado = 'h/2 . [f(x0)';
+    this.formulaResultado = 'h/2 * [f(x0)';
     let i = 1;
 
     for (; i < this.x.length - 1; i++) {
@@ -65,7 +65,7 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.x.push(this.limiteInferior, this.h + this.limiteInferior);
 
     let i = 2;
-    for (; this.x[i - 1] < this.limiteSuperior; i++) {
+    for (; this.x[i - 1] < this.n; i++) {
       this.x.push(this.converterParaFloat(this.x[i - 1] + this.h));
     }
 
@@ -77,8 +77,61 @@ export class IntegracaoNumericaComponent implements OnInit {
   /**
    * @description Método responsável por calcular o resultado final
    */
-  private calcularResultadoFinal(x: number[]): void {
+  private calcularResultadoFinal(): void {
+    this.existeDivisao(this.x[0]);
+    let resultadoParcial: number = this.resultado;
+    this.processoResultado = this.h + ' * [' + resultadoParcial;
 
+    let i = 1;
+    for (; i < this.x.length - 1; i++) {
+      this.existeDivisao(this.x[i]);
+      this.processoResultado += ' + 2*' + this.resultado;
+      resultadoParcial += 2 * this.resultado;
+    }
+
+    this.existeDivisao(this.x[i]);
+    this.processoResultado += ' + ' + this.resultado + ']';
+    resultadoParcial += this.resultado;
+
+    this.resultado = this.converterParaFloat((this.h / 2) * resultadoParcial);
+    console.log('resultado final: ', this.resultado);
+  }
+
+  /**
+   * @description Método responsável por verificar se existe divisão e efetuar o cálculo
+   * @param valorAtual_X number
+   */
+  private existeDivisao(valorAtual_X: number) {
+    if (this.verificarSeExisteOperador('/').length > 1) {
+      let numerador: number = this.calcularResultadoParcialDaDivisao(0, this.funcao, valorAtual_X);
+      let denominador: number = this.calcularResultadoParcialDaDivisao(1, this.funcao, valorAtual_X);
+      
+      this.resultado = this.converterParaFloat(numerador / denominador);
+      console.log('divisao: ', this.resultado);
+    } 
+    else {
+      let operador: string = this.retornarOperadorFuncao();
+      this.efetuarCalculoComOperadorEncontrado(operador, valorAtual_X);
+    }
+
+    console.log('resultado parcial: ',  this.resultado);
+    console.log('');
+  }
+
+  /**
+   * @description Método responsável por calcular o resultado parcial da divisão da função
+   * @param posicao number
+   * @param funcaoAuxiliar string
+   * @param valorAtual_X number
+   * @returns number - Valor parcial da Divisão 
+   */
+  private calcularResultadoParcialDaDivisao(posicao: number, funcaoAuxiliar: string, valorAtual_X: number): number {
+    let operador: string;
+
+    operador = this.retornarOperadorFuncao(funcaoAuxiliar.split('/')[posicao]);
+    this.efetuarCalculoComOperadorEncontrado(operador, valorAtual_X);
+
+    return this.resultado;
   }
 
   /**
@@ -95,8 +148,16 @@ export class IntegracaoNumericaComponent implements OnInit {
     //Antes do Operador
     let resultadoParcialAntesOperador: number = this.resultadoParcial(valores, valoresAntesOperador, valorAtual_X);
 
+    console.log('valoresDepoisOperador', valoresDepoisOperador)
+    if (operador === undefined) { //Quando houver apenas um valor
+      console.log('um valor');
+      this.resultado = resultadoParcialAntesOperador;
+      return;
+    }
+
     //Depois do Operador
     let resultadoParcialDepoisOperador: number = this.resultadoParcial(valores, valoresDepoisOperador, valorAtual_X);
+    console.log('depois do operador')
 
     console.log(resultadoParcialAntesOperador);
     console.log(resultadoParcialDepoisOperador);
@@ -113,6 +174,7 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @returns number - Valor parcial
    */
   private resultadoParcial(valores: string[], valorParcial: string, valorAtual_X: number): number {
+    console.log('valor: ', valorParcial)
     let resultadoParcial: number;
     let funcao: string[];
     let constante: number;
@@ -180,6 +242,7 @@ export class IntegracaoNumericaComponent implements OnInit {
       }
 
       else if (funcao.length === 1 && funcao[0] === 'x') { // Quando houver apenas a variável
+        console.log('chegou')
         resultadoParcial = valorAtual_X;
       }
       else { //Quando houver apenas a constante
@@ -283,7 +346,7 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @param funcao? string
    * @returns string[]
    */
-  private verificarSeExisteOperador(regex: string,funcao?: string): string[] {
+  private verificarSeExisteOperador(regex: string, funcao?: string): string[] {
     return (funcao) ? funcao.split(regex) : this.funcao.split(regex);
   }
 

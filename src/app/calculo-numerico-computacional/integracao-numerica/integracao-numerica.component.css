@@ -9,3 +9,8 @@
     height: 40px;
     text-align: center;
 }
+
+.barra-vertical {
+    border-right: 2px solid rgb(182, 180, 180);
+    height: 270px;
+}

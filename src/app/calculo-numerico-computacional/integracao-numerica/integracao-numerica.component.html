@@ -11,7 +11,10 @@
         <input class="input-style mr-3" type="number" pInputText [(ngModel)]="limiteSuperior"> 
     
         <label class="h5 mx-3">Limite Inferior:</label>
-        <input class="input-style" type="number" pInputText [(ngModel)]="limiteInferior"> 
+        <input class="input-style mr-3" type="number" pInputText [(ngModel)]="limiteInferior"> 
+
+        <label class="h5 mx-3">N = </label>
+        <input class="input-style" type="number" pInputText [(ngModel)]="n"> 
     </div>
 
     <div class="mt-5">
@@ -28,12 +31,30 @@
     <div class="mt-4" *ngIf="exibirResolucao">
         <div class="h3 text-danger">Resolução</div>
 
-        <div class="h4">
-            {{ formulaResultado }}
-        </div>
-
-        <div class="h4">
-            {{ processoResultado }} = {{ resultado }}
+        <div class="container-fluid">
+            <div class="row my-3">
+                <div class="col-xl-4 text-center mt-3">
+                    <div class="h4 text-info">Valores de X</div>
+                    <div *ngFor="let valorAtual_X of x; let i = index" >
+                        <div class="h4">f(x{{ i }}) = {{ valorAtual_X }}</div>
+                    </div>
+                </div>
+        
+                <div class="barra-vertical"></div>
+        
+                <div class="col-xl-7">
+                    <div class="h4 text-info">Fórmula</div>
+    
+                    <div class="h4 text-secondary">
+                        {{ formulaResultado }}
+                    </div>
+            
+                    <div class="h4 mt-4">
+                        {{ processoResultado }} = 
+                        <span class="text-danger"> {{ resultado }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
