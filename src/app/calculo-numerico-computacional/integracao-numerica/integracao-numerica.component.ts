@@ -22,6 +22,7 @@ export class IntegracaoNumericaComponent implements OnInit {
   public resultado: number = 0;
   public formulaResultado: string;
   public exibirResolucao: boolean = false;
+  public processoResultado: string;
 
   constructor() { }
 
@@ -36,8 +37,9 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.h = this.converterParaFloat((this.limiteSuperior - this.limiteInferior) / this.limiteSuperior);
     let x = this.calcularValoresDeX();
 
-    this.existeDivisao();
     this.gerarFormulaResultado();
+    this.efetuarCalculoComOperadorEncontrado('+', this.x[0]);
+    this.calcularResultadoFinal(x);
   }
 
   /**
@@ -62,7 +64,7 @@ export class IntegracaoNumericaComponent implements OnInit {
     this.x.push(this.limiteInferior, this.h + this.limiteInferior);
 
     let i = 2;
-    for (; this.x[i - 1] !== this.limiteSuperior; i++) {
+    for (; this.x[i - 1] < this.limiteSuperior; i++) {
       this.x.push(this.converterParaFloat(this.x[i - 1] + this.h));
     }
 
@@ -72,51 +74,140 @@ export class IntegracaoNumericaComponent implements OnInit {
   }
 
   /**
-   * @description Método responsável por verificar se existe divisão na função e efetuar os cálculos
+   * @description Método responsável por calcular o resultado final
    */
-  private existeDivisao() {
-    if (this.verificarSeExisteOperador('/').length > 1) {
-      console.log('Com divisao');
-      let funcaoAuxiliar = this.funcao;
+  private calcularResultadoFinal(x: number[]): void {
 
-      let numerador = this.calcularValoresParaDivisao(0, funcaoAuxiliar);
-      let denominador = this.calcularValoresParaDivisao(1, funcaoAuxiliar);
-
-      this.resultado = this.converterParaFloat(numerador / denominador);
-      console.log('resultado divisao: ', this.resultado);
-    }
-    else {
-      let operador: string;
-      console.log('Sem divisao');
-      operador = this.retornarOperadorFuncao();
-      console.log('sinal: ', operador);
-      this.efetuarCalculoComOperadorEncontrado(operador);
-    }
   }
 
   /**
-   * @description Método responsável por calcular o resultado parcial da divisão da função
-   * @param posicao number
-   * @param funcaoAuxiliar string
-   * @returns number - Valor parcial da Divisão 
+   * @description Método responsável efetuar o cálculo com base no operador
+   * @param operador string
+   * @param valorAtual_X number
    */
-  private calcularValoresParaDivisao(posicao: number, funcaoAuxiliar: string): number {
-    let operador: string;
+  private efetuarCalculoComOperadorEncontrado(operador: string, valorAtual_X: number): void {
+    let valores = this.verificarSeExisteOperador(operador);
+    let tamanho = valores.length;
+    let valoresAntesOperador = valores[tamanho - 2];
+    let valoresDepoisOperador = valores[tamanho - 1];
 
-    this.funcao = funcaoAuxiliar.split('/')[posicao];
-    operador = this.retornarOperadorFuncao();
-    this.efetuarCalculoComOperadorEncontrado(operador);
+    //Antes do Operador
+    let resultadoParcialAntesOperador: number = this.resultadoParcial(valores, valoresAntesOperador, valorAtual_X);
 
-    return this.resultado;
+    //Depois do Operador
+    let resultadoParcialDepoisOperador: number = this.resultadoParcial(valores, valoresDepoisOperador, valorAtual_X);
+
+    console.log(resultadoParcialAntesOperador);
+    console.log(resultadoParcialDepoisOperador);
+    
+    this.resultado = this.efetuarCalculo(resultadoParcialAntesOperador, operador, resultadoParcialDepoisOperador);
+    console.log('resultado: ', this.resultado);
+  }
+
+  /**
+   * @description Método responsável por calcular o resultado parcial da função
+   * @param valores string[]
+   * @param valorParcial string
+   * @param valorAtual_X string
+   * @returns number - Valor parcial
+   */
+  private resultadoParcial(valores: string[], valorParcial: string, valorAtual_X: number): number {
+    let resultadoParcial: number;
+    
+    if (valores.length > 1) {  
+      let funcao: string[];
+      let constante: number;
+      let valorAntesExpoente: string;
+
+      if (valorParcial === 'x') { //Quando houver apenas a variável
+        resultadoParcial = valorAtual_X;
+      }
+      else if (this.verificarSeExisteOperador('^', valorParcial).length > 1) { //Quando houver expoente
+        funcao = this.verificarSeExisteOperador('^', valorParcial);
+        valorAntesExpoente = funcao[0];
+          
+        if (valorAntesExpoente === 'x') { //Quando houver apenas a variável com expoente
+          resultadoParcial = this.calcularExpoente(valorAtual_X, funcao[1]);
+        }
+        else if (parseFloat(valorAntesExpoente.split('x')[0])) { //Quando houver constante e variável com expoente
+          constante = parseFloat(valorAntesExpoente.split('x')[0]);
+          resultadoParcial = this.calcularExpoente(valorAtual_X, funcao[1], constante);
+        }
+      }
+      else if (this.verificarSeExisteOperador('sen', valorParcial).length > 1) {
+        resultadoParcial = this.calcularAngulo('sen', valorParcial, valorAtual_X);
+      }
+      else if (valorParcial !== 'x') { //Quando houver apenas uma constante
+        resultadoParcial = parseFloat(valorParcial);
+      }
+    }
+
+    return this.converterParaFloat(resultadoParcial);
+  }
+
+  /**
+   * @description Método responsável por calcular o Ângulo
+   * @param eixoAngulo string
+   * @param funcao string
+   * @param valor_X number
+   * @returns number - Valor do Ângulo
+   */
+  private calcularAngulo(eixoAngulo: string, funcao: string, valor_X: number): number {
+    let resultado: number;
+    let funcaoAngulo = funcao.split(eixoAngulo)[1];
+    let constante: number = parseFloat(funcaoAngulo.split('x')[0]);
+
+    if (eixoAngulo === 'sen') {
+      if (funcaoAngulo === 'x') {
+        resultado = Math.sin(valor_X);
+      }
+      else if (funcaoAngulo.length > 1) {
+        resultado = Math.sin(constante * valor_X);
+      }
+      else {
+        resultado = Math.sin(constante);
+      }
+    }
+
+    else if (eixoAngulo === 'cos') {
+      if (funcaoAngulo === 'x') {
+        resultado = Math.cos(valor_X);
+      }
+      else if (funcaoAngulo.length > 1) {
+        resultado = Math.cos(constante * valor_X);
+      }
+      else {
+        resultado = Math.cos(constante);
+      }
+    }
+
+    return this.converterParaFloat(resultado);
+  }
+
+  /**
+   * @description Método responsável por calcular o expoente
+   * @param valor_X number
+   * @param expoente string
+   * @param constante? number
+   * @returns number
+   */
+  private calcularExpoente(valor_X: number, expoente: string, constante?: number): number {
+    if (constante) {
+      return constante * Math.pow(valor_X, parseFloat(expoente));
+    }
+    return Math.pow(valor_X, parseFloat(expoente));
   }
 
   /**
    * @description Método responsável por retornar o operador utilizado na função
+   * @param funcao? string
    * @returns string - Operador
    */
-  private retornarOperadorFuncao(): string {
-    for (let index = 0; index < this.funcao.length; index++) {
-      let caracterAtual = this.funcao.charAt(index);
+  private retornarOperadorFuncao(funcao?: string): string {
+    funcao = (funcao) ? funcao : this.funcao;
+
+    for (let i = 0; i < funcao.length; i++) {
+      let caracterAtual = funcao.charAt(i);
 
       if (caracterAtual === '+' || caracterAtual === '-' || caracterAtual === '*') {
         return caracterAtual;
@@ -125,230 +216,30 @@ export class IntegracaoNumericaComponent implements OnInit {
   } 
 
   /**
-   * @description Método responsável efetuar o cálculo com base no operador
-   * @param operador string
-   */
-  private efetuarCalculoComOperadorEncontrado(operador: string): void {
-    let valores = this.verificarSeExisteOperador(operador);
-    let tamanho = valores.length;
-    let vetorExpoente: string[];
-    let valorExpoente: number;
-
-    if (valores.length > 1) {
-
-      // ANTES DO OPERADOR
-      if (valores[tamanho - 2] === 'x') { // Valores antes do sinal quando há uma variável sem constante
-        this.efetuarCalculo(this.h.toString(), operador, valores[tamanho - 1]);
-      }
-
-      else if (valores[tamanho - 2].split('^').length > 1) { // Quando houver expoente na função
-        this.calcularExpoenteAntesDoSinal(vetorExpoente, valorExpoente, valores, tamanho, operador);
-      }
-
-      else if (valores[tamanho - 2].split('sen').length > 1) {
-        let valorAngulo = this.calcularAngulo('sen', valores[tamanho - 2].split('sen'));
-        this.efetuarCalculo(valorAngulo, operador, valores[tamanho - 1]);
-      }
-
-      else if (valores[tamanho - 2].split('cos').length > 1) {
-        let valorAngulo = this.calcularAngulo('cos', valores[tamanho - 2].split('cos'));
-        this.efetuarCalculo(valorAngulo, operador, valores[tamanho - 1]);
-      }
-
-      else if (valores[tamanho - 2].length > 1) { // Valores antes do sinal quando há uma variável com constante
-        let constante = parseFloat(valores[tamanho - 2].split('x')[0]);
-        this.efetuarCalculo((constante * this.h).toString(), operador, valores[tamanho - 1]);
-      }      
-
-/* ================================================================================================================================ */
-
-      // DEPOIS DO OPERADOR
-      else if (valores[tamanho - 1] === 'x') { // Valores depois do sinal quando há uma variável sem constante
-        this.efetuarCalculo(valores[tamanho - 2], operador, this.h.toString());
-      }
-
-      else if (valores[tamanho - 1].split('^').length > 1) { // Quando houver expoente na função
-        this.calcularExpoenteDepoisDoSinal(vetorExpoente, valorExpoente, valores, tamanho, operador);
-      }
-
-      else if (valores[tamanho - 1].split('sen').length > 1) { // Quando houver houver ângulo e for SEN
-        let valorAngulo = this.calcularAngulo('sen', valores[tamanho - 1].split('sen'));
-        this.efetuarCalculo(valores[tamanho - 2], operador, valorAngulo);
-      }
-
-      else if (valores[tamanho - 1].split('cos').length > 1) { // Quando houver houver ângulo e for COS
-        let valorAngulo = this.calcularAngulo('cos', valores[tamanho - 1].split('cos'));
-        this.efetuarCalculo(valores[tamanho - 2], operador, valorAngulo);
-      }
-
-      else if (valores[tamanho - 1].length > 1) { // Valores depois do sinal quando há uma variável com constante
-        let constante = parseFloat(valores[tamanho - 1].split('x')[0]);
-        this.efetuarCalculo(valores[tamanho - 2], operador, (constante * this.h).toString());
-      }
-
-      else { // Quando não há variável e/ou sinal no numerador
-        this.efetuarCalculo(valores[tamanho - 2], operador, valores[tamanho - 1]);
-      }
-    }
-
-    /* ================================================================================================================================ */
-
-    // QUANDO HOUVER APENAS UM VALOR A SER CALCULADO
-    else if (valores.length === 1) { 
-      vetorExpoente = valores[0].split('^');
-
-      if (valores[tamanho - 1].split('sen').length > 1) { // Quando houver houver ângulo e for SEN
-        this.resultado = parseFloat(this.calcularAngulo('sen', valores[tamanho - 1].split('sen')));
-      }
-
-      else if (valores[tamanho - 1].split('cos').length > 1) { // Quando houver houver ângulo e for COS
-        this.resultado = parseFloat(this.calcularAngulo('cos', valores[tamanho - 1].split('cos')));
-      }
-
-      else if (vetorExpoente.length > 1) {
-        if (vetorExpoente[0] === 'x') { // Quando não houver constante com variável com expoente
-          this.resultado = this.h * parseFloat(vetorExpoente[1]);
-          console.log('Numerador: ', this.resultado);
-        }
-        else { // Quando houver constante, variável e expoente
-          valorExpoente = parseFloat(vetorExpoente[1]);
-          let constante = parseFloat(vetorExpoente[0].split('x')[0]);
-
-          this.resultado = constante * Math.pow(this.h, valorExpoente);
-          console.log('valor com expoente: ', this.resultado);
-        }
-      }
-      else if (vetorExpoente.length === 1 && vetorExpoente[0] === 'x') { // Quando não houver constante 
-        this.resultado = this.h;
-        console.log('x: ', this.resultado);
-      }
-      else { // Quando houver apenas a constante
-        this.resultado = parseFloat(vetorExpoente[0]);
-        console.log('const: ', this.resultado);
-      }
-    }
-
-    console.log('Valores: ', valores);
-    console.log('Tamanho: ', tamanho);
-    console.log('Resultado: ', this.resultado);
-  }
-
-  /**
-   * @description Método responsável por calcular o valor do ângulo em radianos
-   * @param eixoAngulo string
-   * @param valores string[]
-   */
-  private calcularAngulo(eixoAngulo: string, valores: string[]): string {
-    let valor: number;
-    let expressaoAngulo = valores[1];
-
-    if (eixoAngulo === 'sen') {
-      if (expressaoAngulo === 'x') {
-        valor = Math.sin(this.h);
-        console.log('valor sem const: ', valor);
-      }
-      else if (expressaoAngulo.split('x').length > 1) {
-        let constante = parseFloat(expressaoAngulo.split('x')[0]);
-        valor = Math.sin(constante * this.h);
-
-        console.log('angulo com const: ', valor);
-      }
-    }
-
-    else if (eixoAngulo === 'cos') {
-      if (expressaoAngulo === 'x') {
-        valor = Math.cos(this.h);
-        console.log('valor sem const: ', valor);
-      }
-      else if (expressaoAngulo.split('x').length > 1) {
-        let constante = parseFloat(expressaoAngulo.split('x')[0]);
-        valor = Math.cos(constante * this.h);
-
-        console.log('angulo com const: ', valor);
-      }
-    } 
-
-    return valor.toFixed(2);
-  }
-
-  /**
-   * Método responsável por efetuar o cálculo de valores com expoente antes do sinal
-   * @param vetorExpoente string[]
-   * @param valorExpoente number
-   * @param valores string[]
-   * @param tamanho number
-   * @param operador string
-   */
-  private calcularExpoenteAntesDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
-    vetorExpoente = valores[tamanho - 2].split('^');
-    console.log('vetorExpoente: ', vetorExpoente);
-
-    if (vetorExpoente[tamanho - 2] === 'x') { // Se não houver constante explicita
-      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
-      console.log('valorExpoente: ', valorExpoente);
-
-      this.efetuarCalculo(valorExpoente.toString(), operador, valores[tamanho - 1]);
-    }
-    else { // Se houver constante explícita
-      let constanteExpoente = parseFloat(vetorExpoente[tamanho - 2].split('x')[0]);
-      console.log('constanteExpoente: ', constanteExpoente)
-      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
-
-      this.efetuarCalculo((constanteExpoente * valorExpoente).toString(), operador, valores[tamanho - 1]);
-    }
-  }
-
-  /**
-   * Método responsável por efetuar o cálculo de valores com expoente após do sinal
-   * @param vetorExpoente string[]
-   * @param valorExpoente number
-   * @param valores string[]
-   * @param tamanho number
-   * @param operador string
-   */
-  private calcularExpoenteDepoisDoSinal(vetorExpoente: string[], valorExpoente: number, valores: string[], tamanho: number, operador: string): void {
-    vetorExpoente = valores[tamanho - 1].split('^');
-    console.log('vetorExpoente: ', vetorExpoente);
-   
-    if (vetorExpoente[tamanho - 2] === 'x') { // Se não houver constante explicita
-      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
-
-      this.efetuarCalculo(valores[tamanho - 2], operador, valorExpoente.toString());
-    }
-    else { // Se houver constante explícita
-      let constanteExpoente = parseFloat(vetorExpoente[tamanho - 2].split('x')[0]);
-      console.log('constanteExpoente: ', constanteExpoente)
-      valorExpoente = Math.pow(this.h, parseFloat(vetorExpoente[1]));
-
-      this.efetuarCalculo(valores[tamanho - 2], operador, (constanteExpoente * valorExpoente).toString());
-    }
-  }
-
-  /**
    * @description Método responsável por efetuar um cálculo com base no operador passado
-   * @param valor string
+   * @param valor number
    * @param operador string
-   * @param valor2 string
+   * @param valor2 number
+   * @returns number - Resultado da operação
    */
-  private efetuarCalculo(valor: string, operador: string, valor2: string): void {
-    let value = parseFloat(valor);
-    let value2 = parseFloat(valor2);
-
+  private efetuarCalculo(valor: number, operador: string, valor2: number): number {
     switch(operador) {
-      case '+': this.resultado = value + value2; break;
-      case '-': this.resultado = value - value2; break;
-      case '*': this.resultado = value * value2; break;
-      case '^': this.resultado = Math.pow(value, value2); break;
+      case '+': return valor + valor2;
+      case '-': return valor - valor2;
+      case '*': return valor * valor2;
+      case '/': return valor / valor2;
+      case '^': return Math.pow(valor, valor2);
     }
   }
 
   /**
    * @description Método responsável por verificar se existe operador
    * @param regex string
+   * @param funcao? string
    * @returns string[]
    */
-  private verificarSeExisteOperador(regex: string): string[] {
-    return this.funcao.split(regex);
+  private verificarSeExisteOperador(regex: string,funcao?: string): string[] {
+    return (funcao) ? funcao.split(regex) : this.funcao.split(regex);
   }
 
   /**
@@ -357,7 +248,7 @@ export class IntegracaoNumericaComponent implements OnInit {
    * @returns number - Valor convertido
    */
   private converterParaFloat(valor: number): number {
-    return parseFloat(valor.toFixed(2));
+    return parseFloat(valor.toFixed(3));
   }
 
   /**
