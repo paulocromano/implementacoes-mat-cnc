@@ -6,6 +6,7 @@
 
 <div class="text-center">
 
+    <!-- Campos de entrada de Dados -->
     <div class="mt-4">
         <label class="h5 mr-3">Limite Superior:</label>
         <input class="input-style mr-3" type="number" pInputText [(ngModel)]="limiteSuperior"> 
@@ -28,6 +29,7 @@
     <button class="btn btn-success px-5 mt-4" (click)="calcular()" [disabled]="!funcao" style="font-size: 20px;">Calcular</button>
     <button class="btn btn-warning mt-4 ml-3" (click)="resetarValores()" style="font-size: 20px;">Resetar Valores</button>
 
+    <!-- Resolução do Cálculo -->
     <div class="mt-4" *ngIf="exibirResolucao">
         <div class="h3 text-danger">Resolução</div>
 

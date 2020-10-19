@@ -22,74 +22,85 @@ export class MatrizMudancaBaseComponent implements OnInit {
   public resultanteMatriz_Y = new Array<number>();
 
   public verificacao;
+  public ordemMatriz: number;
+  public matrizOrdenada: any[];
 
   constructor() { }
 
   ngOnInit(): void {
-    this.resetarMatrizes(2);
+    this.ordemMatriz = 2;
+    this.resetarMatrizes();
   }
 
   public calcular() {
+    if (this.ordemMatriz === 2) {
+      this.reordenarMatriz(this.matriz_Y, this.matriz_X[0]);
+      this.resultanteMatriz_X = this.metodoGuassJordan(this.ordemMatriz);
+      console.log(this.resultanteMatriz_X);
+    }
+
     this.calculoEfetuado = true;
+  }
 
-    if (this.indexAba === 0) {
-      this.resultanteMatriz_X[0] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[0]);
-      this.resultanteMatriz_X[1] = this.combinacaoLinear2x2(this.matriz_Y, this.matriz_X[1]);
+  private reordenarMatriz(matriz: number[], vetorCombinacao: number): void {
+    this.matrizOrdenada = new Array<number>();
 
-      this.resultanteMatriz_Y[0] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[0]);
-      this.resultanteMatriz_Y[1] = this.combinacaoLinear2x2(this.matriz_X, this.matriz_Y[1]);
-
-      this.verificacaoMudancaBase2x2();
-
-      console.log('Resultante X: ', this.resultanteMatriz_X);
-      console.log('Resultante Y: ', this.resultanteMatriz_Y);
+    for (let i = 0; i < this.ordemMatriz; i++) {
+      this.matrizOrdenada[i] = new Array<number>();
+      
+      for (let j = 0; j < this.ordemMatriz; j++) {
+        this.matrizOrdenada[i][j] = new Array<number>();
+        this.matrizOrdenada[i][j] = matriz[j][i];
+      }
     }
-    else {
-      //TODO
+
+    for (let i = 0; i < this.ordemMatriz; i++) {
+      this.matrizOrdenada[i][this.ordemMatriz] = vetorCombinacao[i]; 
     }
   }
 
-  /**
-   * @description Método responsável pela Combinação Linear da Matriz 2x2
-   * @param matriz : any
-   * @param vetorIgualdade : any
-   * @returns Array - any
-   */
-  private combinacaoLinear2x2(matriz: any, vetorIgualdade: any): any {
-    let vetor_A = new Array(matriz[0][0], matriz[1][0], vetorIgualdade[0]);
-    let vetor_B = new Array(matriz[0][1], matriz[1][1], vetorIgualdade[1]);
+  private metodoGuassJordan(ordemMatriz: number): number[] {
+    let solucao = new Array<number>();
+    let matrizAuxiliar = new Array(new Array());
+    let auxiliar: number;
+    let cloneMatriz = this.matrizOrdenada.slice();
 
-    let zerarIncognitaEquacao = - 1 * (vetor_B[0] / vetor_A[0]); 
+    if (cloneMatriz[0][0] === 0) {
+      matrizAuxiliar[[ordemMatriz + 1][ordemMatriz + 1]];
 
-    let variavel_B = ((vetor_A[2] * zerarIncognitaEquacao) + vetor_B[2]) / ((vetor_A[1] * zerarIncognitaEquacao) + vetor_B[1]);
-    let variavel_A = (vetor_A[2] - (vetor_A[1] * variavel_B)) / vetor_A[0];
-    
-    return new Array(this.converterParaFloat(variavel_A), this.converterParaFloat(variavel_B));
-  }
+      for (let i = 0; i < ordemMatriz; i++) {
+        if (cloneMatriz[i][0] !== 0) {
+          for (let j = 0; j < ordemMatriz + 1; j++) {
+            matrizAuxiliar[0][j] = cloneMatriz[i][j];
+            cloneMatriz[0][j] = matrizAuxiliar[0][j];
+          }
+        }
+        else {
+          for (let j = 0; j < ordemMatriz + 1; j++) {
+            matrizAuxiliar[i + 1][j] = cloneMatriz[i][j];   
+          }
+        }
+      }
+      cloneMatriz = matrizAuxiliar;
+    }
 
-  /**
-   * @description Método responsável por fazer a verficação da Mudança de Base 2x2
-   */
-  private verificacaoMudancaBase2x2(): void {
+    for (let j = 0; j < ordemMatriz; j++) {
+      for (let i = 0; i < ordemMatriz; i++) {
+        if (i !== j) {
+          auxiliar = cloneMatriz[i][j] / cloneMatriz[j][j];
 
-    let posicao00 = this.converterParaFloat(this.resultanteMatriz_X[0][0] * this.resultanteMatriz_Y[0][0]) 
-      + this.converterParaFloat(this.resultanteMatriz_X[1][0] * this.resultanteMatriz_Y[0][1]);
+          for (let k = 0; k < ordemMatriz + 1; k++) {
+            cloneMatriz[i][k] = cloneMatriz[i][k] - (auxiliar * cloneMatriz[j][k]);
+          }
+        }
+      }
+    }
 
-    let posicao01 = this.converterParaFloat(this.resultanteMatriz_X[0][0] * this.resultanteMatriz_Y[1][0]) 
-      + this.converterParaFloat(this.resultanteMatriz_X[1][0] * this.resultanteMatriz_Y[1][1]);
+    for (let i = 0; i < ordemMatriz; i++) {
+      solucao[i] = cloneMatriz[i][ordemMatriz] / cloneMatriz[i][i];
+    }
 
-    let posicao10 = this.converterParaFloat(this.resultanteMatriz_X[0][1] * this.resultanteMatriz_Y[0][0])
-      + this.converterParaFloat(this.resultanteMatriz_X[1][1] * this.resultanteMatriz_Y[0][1]);
-
-    let posicao11 = this.converterParaFloat(this.resultanteMatriz_X[0][1] * this.resultanteMatriz_Y[1][0])
-      + this.converterParaFloat(this.resultanteMatriz_X[1][1] * this.resultanteMatriz_Y[1][1]);
-    
-    this.verificacao = [
-      new Array(posicao00, posicao01),
-      new Array(posicao10, posicao11)
-    ];
-
-    console.log('Verificação: ', this.verificacao);
+    return solucao;
   }
 
   /**
@@ -109,10 +120,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
     this.indexAba = event.index;
 
     if (this.indexAba === 0) {
-      this.resetarMatrizes(2); 
+      this.ordemMatriz = 2;
+      this.resetarMatrizes(); 
     }
     else {
-      this.resetarMatrizes(3);
+      this.ordemMatriz = 3;
+      this.resetarMatrizes();
     }
   }
 
@@ -120,12 +133,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
    * @description Método responsável por resetar as Matrizes
    * @param tamanho : number - Tamanho da Matriz Quadrada
    */
-  public resetarMatrizes(tamanho: number): void {
+  public resetarMatrizes(): void {
     this.matriz_X = new Array();
     this.matriz_Y = new Array();
 
-    this.resetarMatriz(this.matriz_X, tamanho);
-    this.resetarMatriz(this.matriz_Y, tamanho);
+    this.resetarMatriz(this.matriz_X, this.ordemMatriz);
+    this.resetarMatriz(this.matriz_Y, this.ordemMatriz);
 
     this.calculoEfetuado = false;
   }
@@ -136,7 +149,6 @@ export class MatrizMudancaBaseComponent implements OnInit {
    * @param tamanho : number - Tamanho da Matriz Quadrada
    */
   private resetarMatriz(matriz: any, tamanho: number): void {
-    
     for (let i = 0; i < tamanho; i++) {
       matriz[i] = new Array();
 
