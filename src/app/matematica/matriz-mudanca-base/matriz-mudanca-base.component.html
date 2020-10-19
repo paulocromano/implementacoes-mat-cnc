@@ -47,7 +47,7 @@
             </div>
 
             <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
-            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes()" style="font-size: 20px;">Resetar Vetores</button>
+            <button class="btn btn-warning mt-4 ml-3" (click)="resetarValores()" style="font-size: 20px;">Resetar Vetores</button>
 
             <!-- Resultados -->
             <div class="row mt-5" *ngIf="calculoEfetuado">
@@ -62,9 +62,9 @@
                     </span>
 
                     <span class="h4">
-                        [  ]
+                        [ {{ resultanteMatriz_X[0][0] }} , {{ resultanteMatriz_X[1][0] }} ]
                     </span>
-                    <div class="h4" style="margin-left: 95px;">[  ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][1] }} , {{ resultanteMatriz_X[1][1] }} ]</div>
                 </div>
 
                 <div class="barra-vertical"></div>
@@ -79,9 +79,9 @@
                     </span>
 
                     <span class="h4">
-                        [ ]
+                        [ {{ resultanteMatriz_Y[0][0] }} , {{ resultanteMatriz_Y[1][0] }} ]
                     </span>
-                    <div class="h4" style="margin-left: 95px;">[  ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][1] }} , {{ resultanteMatriz_Y[1][1] }} ]</div>
                 </div>
 
                 <div class="barra-vertical"></div>
@@ -92,7 +92,7 @@
 
                     <span class="h2">
                         [U]
-                        <span class="h4" style="margin-left: -10px;">xy .</span>
+                        <span class="h4" style="margin-left: -10px;">xy *</span>
                         [U]
                         <span class="h4" style="margin-left: -10px;"> yx =</span>
                     </span>
@@ -178,7 +178,62 @@
             </div>
 
             <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
-            <button class="btn btn-warning mt-4 ml-3" (click)="resetarMatrizes()" style="font-size: 20px;">Resetar Vetores</button>
+            <button class="btn btn-warning mt-4 ml-3" (click)="resetarValores()" style="font-size: 20px;">Resetar Vetores</button>
+
+            <!-- Resultados -->
+            <div class="row mt-5" *ngIf="calculoEfetuado">
+
+                <!-- Mudança de base X para Y -->
+                <div class="col-xl-3">
+                    <div class="h4 text-danger">Base X para Y:</div>
+
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">xy =</span> 
+                    </span>
+
+                    <span class="h4">
+                        [ {{ resultanteMatriz_X[0][0] }} , {{ resultanteMatriz_X[1][0] }} ]
+                    </span>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][1] }} , {{ resultanteMatriz_X[1][1] }} ]</div>
+                </div>
+
+                <div class="barra-vertical"></div>
+
+                <!-- Mudança de base Y para X -->
+                <div class="col-xl-3">
+                    <div class="h4 text-danger">Base Y para X:</div>
+
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">yx =</span> 
+                    </span>
+
+                    <span class="h4">
+                        [ {{ resultanteMatriz_Y[0][0] }} , {{ resultanteMatriz_Y[1][0] }} ]
+                    </span>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][1] }} , {{ resultanteMatriz_Y[1][1] }} ]</div>
+                </div>
+
+                <div class="barra-vertical"></div>
+
+                <!-- Verificação -->
+                <div class="col-xl-5">
+                    <div class="h4 text-danger">Verificação:</div>
+
+                    <span class="h2">
+                        [U]
+                        <span class="h4" style="margin-left: -10px;">xy *</span>
+                        [U]
+                        <span class="h4" style="margin-left: -10px;"> yx =</span>
+                    </span>
+
+                    <span class="h4">
+                        [  ]
+                    </span>
+                    <div class="h4" style="margin-left: 185px;">[  ]</div>
+                </div>
+            </div>
         </div>
     </p-tabPanel>
 </p-tabView>

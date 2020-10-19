@@ -29,19 +29,46 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.ordemMatriz = 2;
-    this.resetarMatrizes();
+    this.resetarValores();
   }
 
-  public calcular() {
+  /**
+   * @description Método responsável por efetuar a Mudança de Base
+   */
+  public calcular(): void {
     if (this.ordemMatriz === 2) {
-      this.reordenarMatriz(this.matriz_Y, this.matriz_X[0]);
-      this.resultanteMatriz_X = this.metodoGuassJordan(this.ordemMatriz);
-      console.log(this.resultanteMatriz_X);
+      this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
+      this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
     }
-
+    else if (this.ordemMatriz === 3) {
+      this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
+      this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
+    }
     this.calculoEfetuado = true;
   }
 
+  /**
+   * @description Método responsável por gerar a Matriz Resultante da Combinação Linear
+   * @param matriz number[]
+   * @param vetorCombinacao number[] 
+   * @returns number[] - Matriz com a resultante da Combinação Linear
+   */
+  private combinacaoLinear(matriz: number[], vetorCombinacao: number[]): number[] {
+    let matrizResultante = new Array();
+
+    for (let i = 0; i < this.ordemMatriz; i++) {
+      this.reordenarMatriz(matriz, vetorCombinacao[i]);
+      matrizResultante[i] = this.metodoGuassJordan(this.ordemMatriz);
+    }
+
+    return matrizResultante;
+  }
+
+  /**
+   * @description Método responsável pela reordenação da Matriz
+   * @param matriz number[]
+   * @param vetorCombinacao number 
+   */
   private reordenarMatriz(matriz: number[], vetorCombinacao: number): void {
     this.matrizOrdenada = new Array<number>();
 
@@ -59,8 +86,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Método responsável por efetuar a Combinação Linear através do Método de Guass Jordan
+   * @param ordemMatriz number
+   */
   private metodoGuassJordan(ordemMatriz: number): number[] {
-    let solucao = new Array<number>();
+    let vetorResultante = new Array<number>();
     let matrizAuxiliar = new Array(new Array());
     let auxiliar: number;
     let cloneMatriz = this.matrizOrdenada.slice();
@@ -97,45 +128,47 @@ export class MatrizMudancaBaseComponent implements OnInit {
     }
 
     for (let i = 0; i < ordemMatriz; i++) {
-      solucao[i] = cloneMatriz[i][ordemMatriz] / cloneMatriz[i][i];
+      vetorResultante[i] = this.converterParaFloat(cloneMatriz[i][ordemMatriz] / cloneMatriz[i][i]);
     }
 
-    return solucao;
+    return vetorResultante;
   }
 
   /**
    * @description Método responsável por fixar duas casas decimais e converter de volta pra number
-   * @param valor : number
+   * @param valor  number
    * @returns number - Valor convertido
    */
   private converterParaFloat(valor: number): number {
-    return parseFloat(valor.toFixed(2));
+    return parseFloat(valor.toFixed(3));
   }
 
   /**
    * @description Método responsável por receber o índice da TabView
-   * @param event : any - Evento da mudança de Aba da TabView
+   * @param event  any - Evento da mudança de Aba da TabView
    */
   public checarAba(event: any): void {
     this.indexAba = event.index;
 
     if (this.indexAba === 0) {
       this.ordemMatriz = 2;
-      this.resetarMatrizes(); 
+      this.resetarValores(); 
     }
     else {
       this.ordemMatriz = 3;
-      this.resetarMatrizes();
+      this.resetarValores();
     }
   }
 
   /**
-   * @description Método responsável por resetar as Matrizes
-   * @param tamanho : number - Tamanho da Matriz Quadrada
+   * @description Método responsável por resetar os Valores
    */
-  public resetarMatrizes(): void {
+  public resetarValores(): void {
     this.matriz_X = new Array();
+    this.resultanteMatriz_X = new Array();
+
     this.matriz_Y = new Array();
+    this.resultanteMatriz_Y = new Array();
 
     this.resetarMatriz(this.matriz_X, this.ordemMatriz);
     this.resetarMatriz(this.matriz_Y, this.ordemMatriz);
@@ -145,14 +178,14 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
   /**
    * Método responsável resetar uma Matriz
-   * @param matriz : any
-   * @param tamanho : number - Tamanho da Matriz Quadrada
+   * @param matriz any
+   * @param ordemMatriz number - Tamanho da Matriz Quadrada
    */
-  private resetarMatriz(matriz: any, tamanho: number): void {
-    for (let i = 0; i < tamanho; i++) {
+  private resetarMatriz(matriz: any, ordemMatriz: number): void {
+    for (let i = 0; i < ordemMatriz; i++) {
       matriz[i] = new Array();
 
-      for (let j = 0; j < tamanho; j++) {
+      for (let j = 0; j < ordemMatriz; j++) {
         matriz[i][j] = 0;
       }
     }
