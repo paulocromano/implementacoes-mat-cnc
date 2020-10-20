@@ -21,6 +21,8 @@ export class MatrizMudancaBaseComponent implements OnInit {
   public matriz_Y = new Array<number>();
   public resultanteMatriz_Y = new Array<number>();
 
+  public v = new Array<number>(3);
+
   public verificacao;
   public ordemMatriz: number;
   public matrizOrdenada: any[];
@@ -43,6 +45,9 @@ export class MatrizMudancaBaseComponent implements OnInit {
     else if (this.ordemMatriz === 3) {
       this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
       this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
+      console.log('resultanteMatriz_X: ', this.resultanteMatriz_X);
+      console.log('resultanteMatriz_Y: ', this.resultanteMatriz_Y);
+      console.log('v: ', this.v)
     }
     this.calculoEfetuado = true;
   }
@@ -170,6 +175,8 @@ export class MatrizMudancaBaseComponent implements OnInit {
     this.matriz_Y = new Array();
     this.resultanteMatriz_Y = new Array();
 
+    this.v = new Array<number>();
+
     this.resetarMatriz(this.matriz_X, this.ordemMatriz);
     this.resetarMatriz(this.matriz_Y, this.ordemMatriz);
 
@@ -184,6 +191,7 @@ export class MatrizMudancaBaseComponent implements OnInit {
   private resetarMatriz(matriz: any, ordemMatriz: number): void {
     for (let i = 0; i < ordemMatriz; i++) {
       matriz[i] = new Array();
+      this.v[i] = 0;
 
       for (let j = 0; j < ordemMatriz; j++) {
         matriz[i][j] = 0;

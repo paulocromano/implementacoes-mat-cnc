@@ -53,7 +53,7 @@
             <div class="row mt-5" *ngIf="calculoEfetuado">
 
                 <!-- Mudança de base X para Y -->
-                <div class="col-xl-3">
+                <div class="col-xl-5">
                     <div class="h4 text-danger">Base X para Y:</div>
 
                     <span class="h2">
@@ -70,7 +70,7 @@
                 <div class="barra-vertical"></div>
 
                 <!-- Mudança de base Y para X -->
-                <div class="col-xl-3">
+                <div class="col-xl-5">
                     <div class="h4 text-danger">Base Y para X:</div>
 
                     <span class="h2">
@@ -87,7 +87,7 @@
                 <div class="barra-vertical"></div>
 
                 <!-- Verificação -->
-                <div class="col-xl-5">
+                <!--div class="col-xl-5">
                     <div class="h4 text-danger">Verificação:</div>
 
                     <span class="h2">
@@ -101,7 +101,7 @@
                         [  ]
                     </span>
                     <div class="h4" style="margin-left: 185px;">[  ]</div>
-                </div>
+                </div-->
             </div>
         </div>        
     </p-tabPanel>
@@ -177,6 +177,20 @@
                 </div>
             </div>
 
+            <!--div class="mt-4">
+                <div class="h2 text-primary">V</div>
+
+                <div>
+                    <span class="h1 mr-2">(</span>
+                    <input class="input-style" type="number" pInputText [(ngModel)]="v[0]">
+                    <span class="h4 mx-2">,</span>
+                    <input class="input-style" type="number" pInputText [(ngModel)]="v[1]">
+                    <span class="h4 mx-2">,</span>
+                    <input class="input-style" type="number" pInputText [(ngModel)]="v[2]">
+                    <span class="h1 ml-2">)</span>
+                </div>
+            </div-->
+
             <button class="btn btn-success px-5 mt-4" (click)="calcular()" style="font-size: 20px;">Calcular</button>
             <button class="btn btn-warning mt-4 ml-3" (click)="resetarValores()" style="font-size: 20px;">Resetar Vetores</button>
 
@@ -184,7 +198,7 @@
             <div class="row mt-5" *ngIf="calculoEfetuado">
 
                 <!-- Mudança de base X para Y -->
-                <div class="col-xl-3">
+                <div class="col-xl-5">
                     <div class="h4 text-danger">Base X para Y:</div>
 
                     <span class="h2">
@@ -193,15 +207,16 @@
                     </span>
 
                     <span class="h4">
-                        [ {{ resultanteMatriz_X[0][0] }} , {{ resultanteMatriz_X[1][0] }} ]
+                        [ {{ resultanteMatriz_X[0][0] }} , {{ resultanteMatriz_X[1][0] }} , {{ resultanteMatriz_X[2][0] }} ]
                     </span>
-                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][1] }} , {{ resultanteMatriz_X[1][1] }} ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][1] }} , {{ resultanteMatriz_X[1][1] }} , {{ resultanteMatriz_X[2][1] }} ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_X[0][2] }} , {{ resultanteMatriz_X[1][2] }} , {{ resultanteMatriz_X[2][2] }} ]</div>
                 </div>
 
                 <div class="barra-vertical"></div>
 
                 <!-- Mudança de base Y para X -->
-                <div class="col-xl-3">
+                <div class="col-xl-5">
                     <div class="h4 text-danger">Base Y para X:</div>
 
                     <span class="h2">
@@ -210,15 +225,16 @@
                     </span>
 
                     <span class="h4">
-                        [ {{ resultanteMatriz_Y[0][0] }} , {{ resultanteMatriz_Y[1][0] }} ]
+                        [ {{ resultanteMatriz_Y[0][0] }} , {{ resultanteMatriz_Y[1][0] }} , {{ resultanteMatriz_Y[2][0] }} ]
                     </span>
-                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][1] }} , {{ resultanteMatriz_Y[1][1] }} ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][1] }} , {{ resultanteMatriz_Y[1][1] }} , {{ resultanteMatriz_Y[2][1] }} ]</div>
+                    <div class="h4" style="margin-left: 95px;">[ {{ resultanteMatriz_Y[0][2] }} , {{ resultanteMatriz_Y[1][2] }} , {{ resultanteMatriz_Y[2][2] }} ]</div>
                 </div>
 
                 <div class="barra-vertical"></div>
 
                 <!-- Verificação -->
-                <div class="col-xl-5">
+                <!--div class="col-xl-5">
                     <div class="h4 text-danger">Verificação:</div>
 
                     <span class="h2">
@@ -232,7 +248,7 @@
                         [  ]
                     </span>
                     <div class="h4" style="margin-left: 185px;">[  ]</div>
-                </div>
+                </div-->
             </div>
         </div>
     </p-tabPanel>
