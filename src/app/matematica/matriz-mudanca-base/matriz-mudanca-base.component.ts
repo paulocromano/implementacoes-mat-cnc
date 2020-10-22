@@ -162,13 +162,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
    */
   private verificacaoMudancaDeBase2x2(): void {
     for (let i = 0; i < this.ordemMatriz; i++) {
-      let k = 0;
-
       for (let j = 0; j < this.ordemMatriz; j++) {
-       this.verificacao[i][j] = this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
-       k++;
-       this.verificacao[i][j] += this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
-       k = 0;
+        this.verificacao[i][j] = 0;
+
+        for (let k = 0; k < this.ordemMatriz; k++) {
+          this.verificacao[i][j] += this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
+        }       
       }
     }
   }
