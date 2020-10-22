@@ -38,16 +38,11 @@ export class MatrizMudancaBaseComponent implements OnInit {
    * @description Método responsável por efetuar a Mudança de Base
    */
   public calcular(): void {
-    if (this.ordemMatriz === 2) {
-      this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
-      this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
-      this.verificacaoMudancaDeBase2x2();
-      console.log('verificacao: ', this.verificacao);
-    }
-    else if (this.ordemMatriz === 3) {
-      this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
-      this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
-    }
+    this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
+    this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
+    this.verificacaoMudancaDeBase();
+    console.log('verificacao: ', this.verificacao);
+    
     this.calculoEfetuado = true;
   }
 
@@ -158,9 +153,9 @@ export class MatrizMudancaBaseComponent implements OnInit {
   }
 
   /**
-   * @description Método responsável por fazer a verificação da Mudança de Base 2x2
+   * @description Método responsável por fazer a verificação da Mudança de Base
    */
-  private verificacaoMudancaDeBase2x2(): void {
+  private verificacaoMudancaDeBase(): void {
     for (let i = 0; i < this.ordemMatriz; i++) {
       for (let j = 0; j < this.ordemMatriz; j++) {
         this.verificacao[i][j] = 0;
