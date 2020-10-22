@@ -23,7 +23,7 @@ export class MatrizMudancaBaseComponent implements OnInit {
 
   public v = new Array<number>(3);
 
-  public verificacao;
+  public verificacao: any[];
   public ordemMatriz: number;
   public matrizOrdenada: any[];
 
@@ -41,13 +41,12 @@ export class MatrizMudancaBaseComponent implements OnInit {
     if (this.ordemMatriz === 2) {
       this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
       this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
+      this.verificacaoMudancaDeBase2x2();
+      console.log('verificacao: ', this.verificacao);
     }
     else if (this.ordemMatriz === 3) {
       this.resultanteMatriz_X = this.combinacaoLinear(this.matriz_Y, this.matriz_X);
       this.resultanteMatriz_Y = this.combinacaoLinear(this.matriz_X, this.matriz_Y);
-      console.log('resultanteMatriz_X: ', this.resultanteMatriz_X);
-      console.log('resultanteMatriz_Y: ', this.resultanteMatriz_Y);
-      console.log('v: ', this.v)
     }
     this.calculoEfetuado = true;
   }
@@ -66,7 +65,7 @@ export class MatrizMudancaBaseComponent implements OnInit {
       matrizResultante[i] = this.metodoGuassJordan(this.ordemMatriz);
     }
 
-    return matrizResultante;
+    return this.transformarLinhasEmColunasMatriz(matrizResultante);
   }
 
   /**
@@ -140,6 +139,41 @@ export class MatrizMudancaBaseComponent implements OnInit {
   }
 
   /**
+   * @description Método responsável por transformar Linhas em Colunas da Matriz
+   * @param matriz number[]
+   * @returns number[] - Matriz transformada
+   */
+  private transformarLinhasEmColunasMatriz(matriz: number[]): number[] {
+    let matrizClone = new Array();
+
+    for (let j = 0; j < this.ordemMatriz; j++) {
+      matrizClone[j] = new Array();
+
+      for (let i = 0; i < this.ordemMatriz; i++) {
+        matrizClone[j][i] = matriz[i][j];
+      }
+    }
+
+    return matrizClone;
+  }
+
+  /**
+   * @description Método responsável por fazer a verificação da Mudança de Base 2x2
+   */
+  private verificacaoMudancaDeBase2x2(): void {
+    for (let i = 0; i < this.ordemMatriz; i++) {
+      let k = 0;
+
+      for (let j = 0; j < this.ordemMatriz; j++) {
+       this.verificacao[i][j] = this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
+       k++;
+       this.verificacao[i][j] += this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
+       k = 0;
+      }
+    }
+  }
+
+  /**
    * @description Método responsável por fixar duas casas decimais e converter de volta pra number
    * @param valor  number
    * @returns number - Valor convertido
@@ -175,10 +209,11 @@ export class MatrizMudancaBaseComponent implements OnInit {
     this.matriz_Y = new Array();
     this.resultanteMatriz_Y = new Array();
 
+    this.verificacao = new Array<number>();
     this.v = new Array<number>();
 
-    this.resetarMatriz(this.matriz_X, this.ordemMatriz);
-    this.resetarMatriz(this.matriz_Y, this.ordemMatriz);
+    this.resetarMatriz(this.matriz_X);
+    this.resetarMatriz(this.matriz_Y);
 
     this.calculoEfetuado = false;
   }
@@ -186,15 +221,16 @@ export class MatrizMudancaBaseComponent implements OnInit {
   /**
    * Método responsável resetar uma Matriz
    * @param matriz any
-   * @param ordemMatriz number - Tamanho da Matriz Quadrada
    */
-  private resetarMatriz(matriz: any, ordemMatriz: number): void {
-    for (let i = 0; i < ordemMatriz; i++) {
+  private resetarMatriz(matriz: any): void {
+    for (let i = 0; i < this.ordemMatriz; i++) {
       matriz[i] = new Array();
+      this.verificacao[i] = new Array();
       this.v[i] = 0;
 
-      for (let j = 0; j < ordemMatriz; j++) {
+      for (let j = 0; j < this.ordemMatriz; j++) {
         matriz[i][j] = 0;
+        this.verificacao[i][j] = 0
       }
     }
   }
