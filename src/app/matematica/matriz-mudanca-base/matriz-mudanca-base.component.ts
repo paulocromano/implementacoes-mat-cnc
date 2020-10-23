@@ -163,6 +163,8 @@ export class MatrizMudancaBaseComponent implements OnInit {
         for (let k = 0; k < this.ordemMatriz; k++) {
           this.verificacao[i][j] += this.resultanteMatriz_X[i][k] * this.resultanteMatriz_Y[k][j];
         }       
+
+        this.verificacao[i][j] = Math.abs(this.converterParaFloat(this.verificacao[i][j], 2));
       }
     }
   }
@@ -170,10 +172,11 @@ export class MatrizMudancaBaseComponent implements OnInit {
   /**
    * @description Método responsável por fixar duas casas decimais e converter de volta pra number
    * @param valor  number
+   * @param casasDecimais? number
    * @returns number - Valor convertido
    */
-  private converterParaFloat(valor: number): number {
-    return parseFloat(valor.toFixed(3));
+  private converterParaFloat(valor: number, casasDecimais?: number): number {
+    return (!casasDecimais) ? parseFloat(valor.toFixed(3)) : parseFloat(valor.toFixed(casasDecimais));
   }
 
   /**
